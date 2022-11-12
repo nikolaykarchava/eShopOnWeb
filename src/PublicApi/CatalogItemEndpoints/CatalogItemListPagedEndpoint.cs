@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.ApplicationCore.Specifications;
+using Microsoft.eShopWeb.Infrastructure.Logging;
+using Microsoft.Extensions.Logging;
 using MinimalApi.Endpoint;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
@@ -20,11 +22,13 @@ public class CatalogItemListPagedEndpoint : IEndpoint<IResult, ListPagedCatalogI
     private IRepository<CatalogItem> _itemRepository;
     private readonly IUriComposer _uriComposer;
     private readonly IMapper _mapper;
+    private IAppLogger<ListPagedCatalogItemRequest> _logger;
 
-    public CatalogItemListPagedEndpoint(IUriComposer uriComposer, IMapper mapper)
+    public CatalogItemListPagedEndpoint(IUriComposer uriComposer, IMapper mapper, IAppLogger<ListPagedCatalogItemRequest> logger)
     {
         _uriComposer = uriComposer;
         _mapper = mapper;
+        _logger = logger;
     }
 
     public void AddRoute(IEndpointRouteBuilder app)
@@ -53,6 +57,8 @@ public class CatalogItemListPagedEndpoint : IEndpoint<IResult, ListPagedCatalogI
             typeId: request.CatalogTypeId);
 
         var items = await _itemRepository.ListAsync(pagedSpec);
+        
+        _logger.LogInformation($"CatalogItemListPagedEndpoint retrieved from db: {items.Count} items");
 
         response.CatalogItems.AddRange(items.Select(_mapper.Map<CatalogItemDto>));
         foreach (CatalogItemDto item in response.CatalogItems)

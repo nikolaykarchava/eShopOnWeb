@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Azure.Identity;
 using BlazorShared;
 using BlazorShared.Models;
 using MediatR;
@@ -32,6 +33,10 @@ builder.Services.AddEndpoints();
 // Use to force loading of appsettings.json of test project
 builder.Configuration.AddConfigurationFile("appsettings.test.json");
 builder.Logging.AddConsole();
+
+builder.Configuration.AddAzureKeyVault(
+    new Uri($"https://{builder.Configuration["KeyVaultName"]}.vault.azure.net/"),
+    new DefaultAzureCredential());
 
 Microsoft.eShopWeb.Infrastructure.Dependencies.ConfigureServices(builder.Configuration, builder.Services);
 
@@ -86,6 +91,8 @@ builder.Services.AddControllers();
 
 builder.Services.AddMediatR(typeof(CatalogItem).Assembly);
 builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
+
+//builder.Services.AddApplicationInsightsTelemetry();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
