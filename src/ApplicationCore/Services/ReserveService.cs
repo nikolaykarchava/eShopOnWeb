@@ -12,17 +12,19 @@ namespace Microsoft.eShopWeb.ApplicationCore.Services;
 
 public class ReserveService
 {
-    private readonly IConfiguration _configuration;
-    public ReserveService(IConfiguration configuration)
+    private readonly string _SBConnectionString;
+    private readonly string _DOPConnectionString;
+    public ReserveService(string SBConnectionString, string DOPConnectionString)
     {
-        _configuration = configuration;
+        _SBConnectionString = SBConnectionString;
+        _DOPConnectionString = DOPConnectionString;
     }
     
     public async Task SendToReserver(Order order)
     {
         var body = JsonSerializer.Serialize(order.OrderItems.Select(x => new {item_id = x.Id, quantity = x.Units}).ToList());
         var queueName = "orders-queue";
-        await using var client = new ServiceBusClient(_configuration.GetConnectionString("SBConnectionString"));
+        await using var client = new ServiceBusClient(_SBConnectionString);
         ServiceBusSender sender = client.CreateSender(queueName);
 
         var message = new ServiceBusMessage(body);
@@ -37,7 +39,7 @@ public class ReserveService
             address = order.ShipToAddress, items = order.OrderItems, total = order.Total()
         });
         HttpClient client = new HttpClient();
-        await client.PostAsync(_configuration.GetConnectionString("DOPConnectionString"),
+        await client.PostAsync(_DOPConnectionString,
             new StringContent(body));
     }
 }

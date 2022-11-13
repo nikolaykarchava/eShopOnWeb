@@ -19,7 +19,8 @@ public static class ConfigureCoreServices
 
         services.AddScoped<IBasketService, BasketService>();
         services.AddScoped<IOrderService, OrderService>();
-        services.AddScoped<ReserveService>();
+        services.AddScoped<ReserveService>(s =>
+            new ReserveService(configuration.GetConnectionString("SBConnectionString"), configuration.GetConnectionString("DOPConnectionString")));
         services.AddScoped<IBasketQueryService, BasketQueryService>();
         services.AddSingleton<IUriComposer>(new UriComposer(configuration.Get<CatalogSettings>()));
         services.AddScoped(typeof(IAppLogger<>), typeof(LoggerAdapter<>));
