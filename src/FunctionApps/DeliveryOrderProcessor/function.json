@@ -1,0 +1,28 @@
+﻿{
+  "bindings": [
+    {
+      "authLevel": "function",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req",
+      "methods": [
+        "get",
+        "post"
+      ]
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "res"
+    },
+    {
+      "name": "deliveryOrder",
+      "direction": "out",
+      "type": "cosmosDB",
+      "connectionStringSetting": "azurecourse-cosmosdb_DOCUMENTDB",
+      "databaseName": "orders-db",
+      "collectionName": "delivery-order",
+      "createIfNotExists": true
+    }
+  ]
+}

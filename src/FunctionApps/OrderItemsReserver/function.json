@@ -1,0 +1,18 @@
+﻿{
+  "bindings": [
+    {
+      "name": "mySbMsg",
+      "type": "serviceBusTrigger",
+      "direction": "in",
+      "queueName": "orders-queue",
+      "connection": "nk-eshop_RootManageSharedAccessKey_SERVICEBUS"
+    },
+    {
+      "name": "orderBlob",
+      "path": "orders/{rand-guid}",
+      "connection": "rgazurecourseb70b_STORAGE",
+      "direction": "out",
+      "type": "blob"
+    }
+  ]
+}
